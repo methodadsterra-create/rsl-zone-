@@ -1,9 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
 import { slugify } from '../../utils/slugify';
 import { DEFAULT_TIMEZONE } from '../../utils/datetime';
 import CoverImagePicker from '../../components/CoverImagePicker';
+import RichTextToolbar from '../../components/RichTextToolbar';
+import RichContent from '../../components/RichContent';
 
 const EMPTY_TRANSLATION = { title: '', excerpt: '', content: '', seo_title: '', seo_description: '', canonical_url: '' };
 const PLACEMENT_FIELDS = [
@@ -48,6 +50,8 @@ export default function ArticleEditor() {
   const [playerIds, setPlayerIds] = useState([]);
   const [relatedMatchId, setRelatedMatchId] = useState('');
   const [coverMediaId, setCoverMediaId] = useState('');
+  const contentRef = useRef(null);
+  const [previewBody, setPreviewBody] = useState(false);
   const [translations, setTranslations] = useState({ en: { ...EMPTY_TRANSLATION }, ar: { ...EMPTY_TRANSLATION } });
 
   // Load reference data (categories/teams/players/matches) once.
@@ -244,8 +248,24 @@ export default function ArticleEditor() {
             <textarea rows={2} value={translations[activeLang].excerpt} onChange={(e) => updateTranslation(activeLang, 'excerpt', e.target.value)} />
           </div>
           <div className="admin-form-row">
-            <label>Content ({activeLang})</label>
-            <textarea rows={14} value={translations[activeLang].content} onChange={(e) => updateTranslation(activeLang, 'content', e.target.value)} />
+            <label>
+              Content ({activeLang}){' '}
+              <button type="button" className="rt-link" onClick={() => setPreviewBody((v) => !v)}>{previewBody ? 'Back to editing' : 'Preview'}</button>
+            </label>
+            {previewBody ? (
+              <div className="article-page__body rt-preview" dir={activeLang === 'ar' ? 'rtl' : 'ltr'}>
+                <RichContent text={translations[activeLang].content} />
+              </div>
+            ) : (
+              <>
+                <RichTextToolbar
+                  textareaRef={contentRef}
+                  value={translations[activeLang].content}
+                  onChange={(v) => updateTranslation(activeLang, 'content', v)}
+                />
+                <textarea ref={contentRef} rows={16} dir={activeLang === 'ar' ? 'rtl' : 'ltr'} value={translations[activeLang].content} onChange={(e) => updateTranslation(activeLang, 'content', e.target.value)} />
+              </>
+            )}
           </div>
 
           {activeLang === 'ar' && !translations.ar.title && (
