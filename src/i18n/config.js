@@ -19,7 +19,11 @@ export const SUPPORTED_LANGUAGES = {
   // pt: { code: 'pt', label: 'Portuguese', nativeLabel: 'Português', dir: 'ltr' },
 };
 
-export const DEFAULT_LANGUAGE = 'en';
+// The language visitors get when they have not chosen one themselves.
+export const DEFAULT_LANGUAGE = 'ar';
+// false = everyone starts in DEFAULT_LANGUAGE (until they pick another with
+// the language switcher). true = use the visitor's browser language first.
+export const AUTO_DETECT_BROWSER_LANGUAGE = false;
 export const LANGUAGE_STORAGE_KEY = 'rslzone_lang';
 
 export const isSupportedLanguage = (code) => Object.prototype.hasOwnProperty.call(SUPPORTED_LANGUAGES, code);
