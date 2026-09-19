@@ -7,6 +7,7 @@ import { pickTranslation } from '../utils/translation';
 import { formatDateTime } from '../utils/datetime';
 import { applySeo } from '../utils/seo';
 import { LoadingState, ErrorState } from '../components/States';
+import RichContent from '../components/RichContent';
 
 export default function NewsArticle() {
   const { slug } = useParams();
@@ -81,7 +82,7 @@ export default function NewsArticle() {
       )}
 
       <div className="article-page__body">
-        {tr.content.split('\n').filter(Boolean).map((para, i) => <p key={i}>{para}</p>)}
+        <RichContent text={tr.content} />
       </div>
 
       <div className="share-row">
