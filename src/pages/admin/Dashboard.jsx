@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
 import { formatDateTime, formatCountdown } from '../../utils/datetime';
+import LiveVisitors from '../../components/LiveVisitors';
+import VisitStats from '../../components/VisitStats';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
@@ -97,6 +99,10 @@ export default function AdminDashboard() {
   return (
     <div>
       <h1>Dashboard</h1>
+
+      <LiveVisitors />
+
+      <VisitStats />
 
       <div className="admin-stat-grid">
         <StatCard label="Total articles" value={stats.totalArticles} />
