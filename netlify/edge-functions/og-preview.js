@@ -15,36 +15,49 @@ const esc = (s = '') =>
   String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 const clean = (s = '', max = 200) => {
-  const t = String(s).replace(/<[^>]*>/g, ' ').replace(/[#*_`>\[\]]/g, '').replace(/\s+/g, ' ').trim();
+  const t = String(s)
+    .replace(/\[poll:[^\]]*\]/gi, ' ')
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/[#*_`>\[\]]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
   return t.length > max ? t.slice(0, max - 1).trimEnd() + '…' : t;
 };
 
 export default async (request, context) => {
+  const url = new URL(request.url);
+  // Add ?og_debug=1 to any article link to test this function from a normal
+  // browser; it prints what it found (or why it gave up) instead of the page.
+  const debug = url.searchParams.get('og_debug') === '1';
+  const stop = (why) =>
+    debug ? new Response(`og-preview: ${why}`, { status: 200, headers: { 'content-type': 'text/plain' } }) : undefined;
+
   try {
     const ua = request.headers.get('user-agent') || '';
-    if (!CRAWLERS.test(ua)) return; // real visitors: continue as normal
+    if (!debug && !CRAWLERS.test(ua)) return; // real visitors: continue as normal
 
-    const url = new URL(request.url);
     const m = url.pathname.match(/^\/(en|ar)\/news\/([^/]+)\/?$/);
-    if (!m) return;
+    if (!m) return stop('path did not match /en|ar/news/<slug>');
     const lang = m[1];
     const slug = decodeURIComponent(m[2]);
 
     const base = Netlify.env.get('VITE_SUPABASE_URL');
     const key = Netlify.env.get('VITE_SUPABASE_ANON_KEY');
-    if (!base || !key) return;
+    if (!base || !key) return stop('MISSING ENV VARS: VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY are not available to Functions');
 
     const select =
       'slug,published_at,article_translations(language,title,excerpt,content,seo_title,seo_description),cover:cover_media_id(url,alt_text_en,alt_text_ar)';
     const api = `${base}/rest/v1/articles?slug=eq.${encodeURIComponent(slug)}&select=${encodeURIComponent(select)}&limit=1`;
     const res = await fetch(api, { headers: { apikey: key, Authorization: `Bearer ${key}` } });
-    if (!res.ok) return;
+    if (!res.ok) return stop(`Supabase request failed with status ${res.status}`);
     const [article] = await res.json();
-    if (!article) return;
+    if (!article) return stop(`no published article found for slug "${slug}"`);
 
     const translations = article.article_translations || [];
     const tr = translations.find((t) => t.language === lang) || translations.find((t) => t.language === 'en');
-    if (!tr) return;
+    if (!tr) return stop('article has no translation');
 
     const title = tr.seo_title || tr.title;
     const description = clean(tr.seo_description || tr.excerpt || tr.content);
@@ -75,12 +88,13 @@ export default async (request, context) => {
       .replace(/<title>[\s\S]*?<\/title>/i, `<title>${esc(title)}</title>`)
       .replace(/<meta\s+name="description"[^>]*>/i, `<meta name="description" content="${esc(description)}" />`)
       .replace('</head>', `    ${tags}\n  </head>`);
+    if (debug) html = `<!-- og-preview: OK, image=${image || 'none'} -->\n` + html;
 
     return new Response(html, {
       status: 200,
       headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=300' },
     });
-  } catch (_err) {
-    return; // never break the page because of a preview problem
+  } catch (err) {
+    return stop(`error: ${err && err.message}`); // never break the page because of a preview problem
   }
 };
