@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
 import { slugify } from '../../utils/slugify';
 import { DEFAULT_TIMEZONE } from '../../utils/datetime';
+import CoverImagePicker from '../../components/CoverImagePicker';
 
 const EMPTY_TRANSLATION = { title: '', excerpt: '', content: '', seo_title: '', seo_description: '', canonical_url: '' };
 const PLACEMENT_FIELDS = [
@@ -16,7 +17,7 @@ const PLACEMENT_FIELDS = [
 
 export default function ArticleEditor() {
   const { id } = useParams();
-    const isNew = !id || id === 'new';
+  const isNew = !id || id === 'new';
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(!isNew);
@@ -46,6 +47,7 @@ export default function ArticleEditor() {
   const [teamIds, setTeamIds] = useState([]);
   const [playerIds, setPlayerIds] = useState([]);
   const [relatedMatchId, setRelatedMatchId] = useState('');
+  const [coverMediaId, setCoverMediaId] = useState('');
   const [translations, setTranslations] = useState({ en: { ...EMPTY_TRANSLATION }, ar: { ...EMPTY_TRANSLATION } });
 
   // Load reference data (categories/teams/players/matches) once.
@@ -93,6 +95,7 @@ export default function ArticleEditor() {
       setFeaturedOnHome(article.featured_on_home);
       setIsBreaking(article.is_breaking_news);
       setRelatedMatchId(article.related_match_id || '');
+      setCoverMediaId(article.cover_media_id || '');
       if (article.published_at) {
         const d = new Date(article.published_at);
         setPublishDate(d.toISOString().slice(0, 10));
@@ -169,6 +172,7 @@ export default function ArticleEditor() {
       featured_on_home: featuredOnHome,
       is_breaking_news: isBreaking,
       related_match_id: relatedMatchId || null,
+      cover_media_id: coverMediaId || null,
     };
 
     let articleId = id;
@@ -266,6 +270,11 @@ export default function ArticleEditor() {
         </div>
 
         <div>
+          <div className="admin-panel" style={{ marginBottom: 16 }}>
+            <h2>Featured image</h2>
+            <CoverImagePicker value={coverMediaId} onChange={setCoverMediaId} />
+          </div>
+
           <div className="admin-panel" style={{ marginBottom: 16 }}>
             <h2>Basic Information</h2>
             <div className="admin-form-row">
