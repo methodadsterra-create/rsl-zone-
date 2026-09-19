@@ -29,8 +29,9 @@ export default function AdminArticles() {
   }, [load]);
 
   function titleOf(row) {
-    const en = row.article_translations?.find((t) => t.language === 'en');
-    return en?.title || row.article_translations?.[0]?.title || '(untitled)';
+    const list = row.article_translations || [];
+    const pick = list.find((t) => t.language === 'ar' && t.title) || list.find((t) => t.language === 'en' && t.title) || list.find((t) => t.title);
+    return pick?.title || '(untitled)';
   }
 
   async function publishNow(id) {

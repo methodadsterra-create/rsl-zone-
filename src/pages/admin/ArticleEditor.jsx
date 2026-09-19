@@ -26,7 +26,7 @@ export default function ArticleEditor() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
-  const [activeLang, setActiveLang] = useState('en');
+  const [activeLang, setActiveLang] = useState('ar');
 
   const [categories, setCategories] = useState([]);
   const [teams, setTeams] = useState([]);
@@ -125,10 +125,11 @@ export default function ArticleEditor() {
   }, [id, isNew]);
 
   useEffect(() => {
-    if (!slugTouched && translations.en.title) {
-      setSlug(slugify(translations.en.title));
+    const source = translations.en.title || translations.ar.title;
+    if (!slugTouched && source) {
+      setSlug(slugify(source));
     }
-  }, [translations.en.title, slugTouched]);
+  }, [translations.en.title, translations.ar.title, slugTouched]);
 
   const publishedAtIso = useMemo(() => {
     if (!publishDate || !publishTime) return null;
@@ -152,8 +153,17 @@ export default function ArticleEditor() {
     setError('');
     setNotice('');
 
-    if (!translations.en.title || !translations.en.content) {
-      setError('English title and content are required.');
+    // Write in Arabic, English, or both. Each language you fill in needs a
+    // title AND content; at least one language is required.
+    const complete = { ar: !!(translations.ar.title && translations.ar.content), en: !!(translations.en.title && translations.en.content) };
+    const halfDone = ['ar', 'en'].find((l) => !complete[l] && (translations[l].title || translations[l].content));
+    if (halfDone) {
+      setError(`The ${halfDone === 'ar' ? 'Arabic' : 'English'} version needs both a title and content (or clear both to skip it).`);
+      setSaving(false);
+      return;
+    }
+    if (!complete.ar && !complete.en) {
+      setError('Add a title and content in Arabic or English.');
       setSaving(false);
       return;
     }
@@ -167,7 +177,7 @@ export default function ArticleEditor() {
     }
 
     const articlePayload = {
-      slug: slug || slugify(translations.en.title),
+      slug: slug || slugify(translations.en.title || translations.ar.title) || `post-${Date.now().toString(36)}`,
       category_id: categoryId || null,
       tags: tags.split(',').map((t) => t.trim()).filter(Boolean),
       status: nextStatus,
@@ -182,21 +192,18 @@ export default function ArticleEditor() {
     let articleId = id;
     if (isNew) {
       const { data, error: insErr } = await supabase.from('articles').insert(articlePayload).select().single();
-      if (insErr) { setError(insErr.message); setSaving(false); return; }
+      if (insErr) { setError(insErr.code === '23505' ? 'Another article already uses this link (slug). Change the Slug field and save again.' : insErr.message); setSaving(false); return; }
       articleId = data.id;
     } else {
       const { error: updErr } = await supabase.from('articles').update(articlePayload).eq('id', articleId);
-      if (updErr) { setError(updErr.message); setSaving(false); return; }
+      if (updErr) { setError(updErr.code === '23505' ? 'Another article already uses this link (slug). Change the Slug field and save again.' : updErr.message); setSaving(false); return; }
     }
 
-    // Translations: English always saved. Arabic only saved if BOTH title
-    // and content are present — we never publish an empty translation.
-    const translationRows = [
-      { article_id: articleId, language: 'en', ...translations.en },
-    ];
-    if (translations.ar.title && translations.ar.content) {
-      translationRows.push({ article_id: articleId, language: 'ar', ...translations.ar });
-    }
+    // Translations: only languages with BOTH title and content are saved —
+    // we never publish an empty translation.
+    const translationRows = ['ar', 'en']
+      .filter((l) => complete[l])
+      .map((l) => ({ article_id: articleId, language: l, ...translations[l] }));
     await supabase.from('article_translations').upsert(translationRows, { onConflict: 'article_id,language' });
 
     await supabase.from('article_placements').upsert({ article_id: articleId, ...placements }, { onConflict: 'article_id' });
@@ -235,8 +242,8 @@ export default function ArticleEditor() {
         <div className="admin-panel">
           <h2>Content</h2>
           <div className="lang-tabs">
-            <button type="button" className={activeLang === 'en' ? 'is-active' : ''} onClick={() => setActiveLang('en')}>English</button>
             <button type="button" className={activeLang === 'ar' ? 'is-active' : ''} onClick={() => setActiveLang('ar')}>العربية</button>
+            <button type="button" className={activeLang === 'en' ? 'is-active' : ''} onClick={() => setActiveLang('en')}>English</button>
           </div>
 
           <div className="admin-form-row">
@@ -268,9 +275,9 @@ export default function ArticleEditor() {
             )}
           </div>
 
-          {activeLang === 'ar' && !translations.ar.title && (
+          {!translations[activeLang].title && !translations[activeLang].content && (
             <p style={{ color: 'var(--color-ink-muted)', fontSize: '0.9rem' }}>
-              No Arabic translation yet — the article will simply fall back to English for Arabic visitors until you add one. An empty Arabic translation is never published.
+              You can leave this language empty. Readers in this language will see the {activeLang === 'ar' ? 'English' : 'Arabic'} version with a short notice. An empty version is never published.
             </p>
           )}
 
