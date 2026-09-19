@@ -24,7 +24,7 @@ export default function Header() {
     <header className="site-header">
       <div className="container site-header__bar">
         <Link to={langPath('')} className="site-header__brand" onClick={() => setMenuOpen(false)}>
-          <span className="site-header__brand-mark">RZ</span>
+          <span className="site-header__brand-mark">SPL</span>
           <span className="site-header__brand-name">{t('brand.name')}</span>
         </Link>
 
