@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--
+      Theme + language are applied to <html> BEFORE React mounts, to avoid a
+      flash of the wrong theme/direction on first paint. This tiny inline
+      script is the only thing allowed to run before the bundle loads.
+    -->
+    <script>
+      (function () {
+        try {
+          var storedTheme = localStorage.getItem('rslzone_theme');
+          var theme = storedTheme === 'dark' ? 'dark' : 'light'; // light is always the default
+          document.documentElement.setAttribute('data-theme', theme);
+
+          var storedLang = localStorage.getItem('rslzone_lang');
+          var supported = ['en', 'ar'];
+          var lang = storedLang;
+          if (!lang) {
+            var nav = (navigator.languages && navigator.languages[0]) || navigator.language || 'en';
+            var base = nav.toLowerCase().split('-')[0];
+            lang = supported.indexOf(base) !== -1 ? base : 'en';
+          }
+          document.documentElement.setAttribute('lang', lang);
+          document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
+    <title>RSL Zone — Independent Saudi Pro League News</title>
+    <meta name="description" content="RSL Zone is an independent fan-media publication covering Saudi Pro League news, transfers, matches and clubs. Not affiliated with the Saudi Pro League." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&family=Cairo:wght@600;700;800&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
