@@ -56,7 +56,7 @@ export default async (request, context) => {
     if (!article) return stop(`no published article found for slug "${slug}"`);
 
     const translations = article.article_translations || [];
-    const tr = translations.find((t) => t.language === lang) || translations.find((t) => t.language === 'en');
+    const tr = translations.find((t) => t.language === lang) || translations.find((t) => t.language === 'ar') || translations[0];
     if (!tr) return stop('article has no translation');
 
     const title = tr.seo_title || tr.title;
