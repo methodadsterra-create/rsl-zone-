@@ -6,6 +6,7 @@ import { getArticleBySlug } from '../services/content';
 import { pickTranslation } from '../utils/translation';
 import { formatDateTime } from '../utils/datetime';
 import { applySeo } from '../utils/seo';
+import { DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES } from '../i18n/config';
 import { LoadingState, ErrorState } from '../components/States';
 import RichContent from '../components/RichContent';
 
@@ -37,9 +38,10 @@ export default function NewsArticle() {
       canonical: `${base}/${language}/news/${article.slug}`,
       ogImage: article.cover?.url,
       hreflangs: [
-        { hreflang: 'en', href: `${base}/en/news/${article.slug}` },
-        { hreflang: 'ar', href: `${base}/ar/news/${article.slug}` },
-        { hreflang: 'x-default', href: `${base}/en/news/${article.slug}` },
+        ...(article.article_translations || [])
+          .filter((x) => x.title && x.content)
+          .map((x) => ({ hreflang: x.language, href: `${base}/${x.language}/news/${article.slug}` })),
+        { hreflang: 'x-default', href: `${base}/${DEFAULT_LANGUAGE}/news/${article.slug}` },
       ],
     });
   }, [article, tr, language]);
@@ -63,14 +65,14 @@ export default function NewsArticle() {
         <Link to={langPath('news')}>{t('nav.news')}</Link>
       </nav>
 
-      {tr.isFallback && language !== 'en' && (
-        <p className="fallback-notice">{t('empty.arabicUnavailable')}</p>
+      {tr.isFallback && (
+        <p className="fallback-notice">{t('empty.translationUnavailable')}</p>
       )}
 
       {article.categories?.name_en && (
         <span className="article-card__category">{language === 'ar' ? article.categories.name_ar : article.categories.name_en}</span>
       )}
-      <h1>{tr.title}</h1>
+      <h1 lang={tr.language} dir={SUPPORTED_LANGUAGES[tr.language]?.dir}>{tr.title}</h1>
       <p className="article-page__meta">{formatDateTime(article.published_at, article.timezone, language)}</p>
 
       {article.cover?.url && (
@@ -81,7 +83,7 @@ export default function NewsArticle() {
         />
       )}
 
-      <div className="article-page__body">
+      <div className="article-page__body" lang={tr.language} dir={SUPPORTED_LANGUAGES[tr.language]?.dir}>
         <RichContent text={tr.content} />
       </div>
 
