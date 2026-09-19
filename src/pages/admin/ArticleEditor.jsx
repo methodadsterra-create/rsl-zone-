@@ -222,13 +222,30 @@ export default function ArticleEditor() {
     if (isNew) navigate(`/admin/articles/${articleId}`, { replace: true });
   }
 
+  async function handleDelete() {
+    const name = translations.ar.title || translations.en.title || 'this article';
+    if (!window.confirm(`Delete "${name}" permanently?\n\nIt will be removed from the site and this cannot be undone.`)) return;
+    setSaving(true);
+    setError('');
+    const { error: delErr } = await supabase.from('articles').delete().eq('id', id);
+    if (delErr) {
+      setError(`Couldn't delete: ${delErr.message}`);
+      setSaving(false);
+      return;
+    }
+    navigate('/admin/articles', { replace: true });
+  }
+
   if (loading) return <p>Loading article…</p>;
 
   return (
     <div>
       <div className="admin-page-head">
         <h1>{isNew ? 'New Article' : 'Edit Article'}</h1>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {!isNew && (
+            <button className="btn btn-outline" style={{ color: 'var(--color-live)' }} disabled={saving} onClick={handleDelete}>Delete</button>
+          )}
           <button className="btn btn-outline" disabled={saving} onClick={() => handleSave('draft')}>Save draft</button>
           <button className="btn btn-outline" disabled={saving} onClick={() => handleSave('scheduled')}>Schedule</button>
           <button className="btn" disabled={saving} onClick={() => handleSave('published')}>Publish now</button>

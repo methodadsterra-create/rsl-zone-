@@ -69,10 +69,13 @@ export default function AdminArticles() {
     setBusyId(null);
   }
 
-  async function remove(id) {
-    if (!window.confirm('Delete this article permanently? This cannot be undone.')) return;
-    setBusyId(id);
-    await supabase.from('articles').delete().eq('id', id);
+  async function remove(row) {
+    const name = titleOf(row);
+    if (!window.confirm(`Delete "${name}" permanently?\n\nIt will be removed from the site and this cannot be undone.`)) return;
+    setBusyId(row.id);
+    setError('');
+    const { error: err } = await supabase.from('articles').delete().eq('id', row.id);
+    if (err) setError(`Couldn't delete: ${err.message}`);
     await load();
     setBusyId(null);
   }
@@ -92,7 +95,26 @@ export default function AdminArticles() {
           emptyMessage="No articles yet. Click “New Article” to create your first one."
           rows={articles}
           columns={[
-            { key: 'title', label: 'Title', render: (r) => <Link to={`/admin/articles/${r.id}`}>{titleOf(r)}</Link> },
+            {
+              key: 'title',
+              label: 'Title',
+              render: (r) => (
+                <div style={{ whiteSpace: 'normal', minWidth: 200, maxWidth: 420 }}>
+                  <Link to={`/admin/articles/${r.id}`}>{titleOf(r)}</Link>
+                  <div style={{ marginTop: 6 }}>
+                    <button
+                      type="button"
+                      className="btn btn-outline"
+                      style={{ padding: '3px 10px', fontSize: '0.8rem', color: 'var(--color-live)' }}
+                      disabled={busyId === r.id}
+                      onClick={() => remove(r)}
+                    >
+                      {busyId === r.id ? 'Deleting…' : 'Delete'}
+                    </button>
+                  </div>
+                </div>
+              ),
+            },
             { key: 'category', label: 'Category', render: (r) => r.categories?.name_en || '—' },
             {
               key: 'status',
@@ -124,9 +146,6 @@ export default function AdminArticles() {
                       Archive
                     </button>
                   )}
-                  <button className="btn btn-outline" style={{ padding: '4px 10px', color: 'var(--color-live)' }} disabled={busyId === r.id} onClick={() => remove(r.id)}>
-                    Delete
-                  </button>
                 </div>
               ),
             },
