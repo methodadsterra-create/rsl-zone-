@@ -1,12 +1,14 @@
+import { DEFAULT_LANGUAGE } from '../i18n/config';
+
 // Picks the translation for `lang` from an article's article_translations
-// array, falling back to English (never to a blank object) so the public
-// site never renders empty content — this is the "clear fallback behavior"
-// the spec requires for missing Arabic translations.
+// array. If that language is missing it falls back to the site's default
+// language, then to whatever version exists, so the public site never renders
+// empty content (and an article written in only one language still shows).
 export function pickTranslation(article, lang) {
-  const translations = article?.article_translations || [];
+  const translations = (article?.article_translations || []).filter((t) => t.title && t.content);
   const exact = translations.find((t) => t.language === lang);
   if (exact) return { ...exact, isFallback: false };
-  const en = translations.find((t) => t.language === 'en');
-  if (en) return { ...en, isFallback: true };
-  return { title: '', excerpt: '', content: '', isFallback: true };
+  const fallback = translations.find((t) => t.language === DEFAULT_LANGUAGE) || translations[0];
+  if (fallback) return { ...fallback, isFallback: true };
+  return { title: '', excerpt: '', content: '', language: lang, isFallback: true };
 }
