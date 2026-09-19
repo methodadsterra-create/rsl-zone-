@@ -4,8 +4,6 @@
 
 # SPA fallback: every path (language-prefixed public routes, /admin/*, etc.)
 # must be served index.html so React Router can take over client-side.
-# Without this, refreshing on e.g. /en/news/article-slug or /admin/dashboard
-# would 404 at the CDN level.
 [[redirects]]
   from = "/*"
   to = "/index.html"
@@ -13,3 +11,12 @@
 
 [build.environment]
   NODE_VERSION = "20"
+
+# Link previews (X, WhatsApp, Facebook...)
+[[edge_functions]]
+  path = "/en/news/*"
+  function = "og-preview"
+
+[[edge_functions]]
+  path = "/ar/news/*"
+  function = "og-preview"
