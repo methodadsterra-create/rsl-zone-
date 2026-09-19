@@ -44,6 +44,7 @@ export default {
     noUpcomingMatches: 'No upcoming matches.',
     noResults: 'No results yet.',
     noTransfers: 'No transfers to show.',
+    translationUnavailable: 'This article is not available in English yet. Showing the available version below.',
     arabicUnavailable: 'This article is not available in Arabic yet. Showing the English version below.',
   },
   errors: {

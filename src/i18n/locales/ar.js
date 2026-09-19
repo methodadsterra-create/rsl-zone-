@@ -44,6 +44,7 @@ export default {
     noUpcomingMatches: 'لا توجد مباريات قادمة.',
     noResults: 'لا توجد نتائج بعد.',
     noTransfers: 'لا توجد انتقالات لعرضها.',
+    translationUnavailable: 'هذا المقال غير متوفر بالعربية حتى الآن. تُعرض النسخة المتاحة أدناه.',
     arabicUnavailable: 'هذا المقال غير متوفر باللغة العربية حتى الآن. تُعرض النسخة الإنجليزية أدناه.',
   },
   errors: {
