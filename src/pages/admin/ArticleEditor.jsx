@@ -16,7 +16,7 @@ const PLACEMENT_FIELDS = [
 
 export default function ArticleEditor() {
   const { id } = useParams();
-  const isNew = id === 'new';
+    const isNew = !id || id === 'new';
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(!isNew);
