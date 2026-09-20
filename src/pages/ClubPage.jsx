@@ -8,10 +8,12 @@ import TransferCard from '../components/TransferCard';
 import { PlayerCard } from '../components/TeamPlayerCards';
 import { LoadingState, EmptyState, ErrorState } from '../components/States';
 import { applySeo } from '../utils/seo';
+import { useBrandName } from '../contexts/SiteSettingsContext';
 
 export default function ClubPage() {
   const { slug } = useParams();
   const { language, t } = useLanguage();
+  const brandName = useBrandName();
   const [club, setClub] = useState(null);
   const [articles, setArticles] = useState([]);
   const [matches, setMatches] = useState([]);
@@ -45,10 +47,10 @@ export default function ClubPage() {
   useEffect(() => {
     if (!club) return;
     applySeo({
-      title: `${language === 'ar' ? club.name_ar : club.name_en} — RSL Zone`,
+      title: `${language === 'ar' ? club.name_ar : club.name_en} — ${brandName}`,
       description: (language === 'ar' ? club.description_ar : club.description_en) || undefined,
     });
-  }, [club, language]);
+  }, [club, language, brandName]);
 
   if (error) return <div className="container section"><ErrorState message={error} /></div>;
   if (!club) return <div className="container section"><LoadingState rows={4} /></div>;

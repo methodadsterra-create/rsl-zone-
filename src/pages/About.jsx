@@ -10,7 +10,7 @@ export default function About() {
         {language === 'en' ? (
           <>
             <p>
-              RSL Zone publishes original news coverage, analysis and features about the Saudi Pro League,
+              SPL Zone publishes original news coverage, analysis and features about the Saudi Pro League,
               its clubs, players and matches. We are fans and independent journalists, not a rights holder,
               broadcaster or representative of the league or any club.
             </p>
@@ -22,7 +22,7 @@ export default function About() {
         ) : (
           <>
             <p>
-              ينشر آر إس إل زون تغطية إخبارية أصلية وتحليلات وتقارير خاصة حول دوري روشن السعودي للمحترفين
+              ينشر إس بي إل زون تغطية إخبارية أصلية وتحليلات وتقارير خاصة حول الدوري السعودي للمحترفين
               وأنديته ولاعبيه ومبارياته. نحن مشجعون وصحفيون مستقلون، ولسنا جهة مالكة للحقوق أو جهة بث أو
               ممثلين عن الدوري أو أي ناد.
             </p>

@@ -1,6 +1,6 @@
 // Link previews for X (Twitter), WhatsApp, Facebook, Telegram, etc.
 //
-// RSL Zone is a single-page app: the article title/image are only added to
+// SPL Zone is a single-page app: the article title/image are only added to
 // <head> by JavaScript AFTER the page loads. Social crawlers don't run
 // JavaScript, so they only ever see the generic index.html. This edge
 // function runs before the page is served: when a crawler asks for
@@ -66,7 +66,7 @@ export default async (request, context) => {
     const pageUrl = `${url.origin}/${lang}/news/${article.slug}`;
 
     const tags = [
-      `<meta property="og:site_name" content="RSL Zone" />`,
+      `<meta property="og:site_name" content="SPL Zone" />`,
       `<meta property="og:type" content="article" />`,
       `<meta property="og:title" content="${esc(title)}" />`,
       `<meta property="og:description" content="${esc(description)}" />`,

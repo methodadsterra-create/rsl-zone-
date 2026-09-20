@@ -870,3 +870,8 @@ button {
 .visit-chart__col { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; gap: 2px; }
 .visit-chart__bar { width: 100%; background: var(--color-primary); border-radius: 2px 2px 0 0; opacity: 0.85; }
 .visit-chart__col span { font-size: 0.65rem; color: var(--color-ink-muted); }
+
+/* Header logo + footer social links */
+.site-header__logo { width: 40px; height: 40px; object-fit: contain; flex-shrink: 0; display: block; }
+.site-footer__social { display: flex; gap: 14px; margin: 10px 0 0; }
+.site-footer__social a { color: var(--color-primary); text-decoration: underline; font-size: 0.9rem; }

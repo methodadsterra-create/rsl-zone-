@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useSiteSettings } from '../contexts/SiteSettingsContext';
 
 const NAV = [
   { to: '/admin/dashboard', label: 'Dashboard', end: true },
@@ -18,6 +19,7 @@ const NAV = [
 
 export default function AdminLayout() {
   const { profile, signOut } = useAuth();
+  const { settings } = useSiteSettings();
   const navigate = useNavigate();
   const [navOpen, setNavOpen] = useState(false);
 
@@ -39,7 +41,7 @@ export default function AdminLayout() {
         >
           <span /><span /><span />
         </button>
-        <span className="admin-topbar__brand">RSL Zone Admin</span>
+        <span className="admin-topbar__brand">{(settings?.site_name || 'SPL Zone')} Admin</span>
         <div className="admin-topbar__user">
           <span>{profile?.email}</span>
           {profile?.role && <span className="badge">{profile.role}</span>}

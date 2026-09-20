@@ -32,7 +32,7 @@ export default function AdminLogin() {
   return (
     <div className="admin-login">
       <form className="admin-login__card" onSubmit={handleSubmit}>
-        <h1>RSL Zone Admin</h1>
+        <h1>SPL Zone Admin</h1>
         <p className="admin-login__hint">Sign in with your admin/editor account.</p>
 
         <div className="admin-form-row">

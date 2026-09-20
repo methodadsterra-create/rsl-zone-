@@ -6,7 +6,7 @@ export default function AdminLanguages() {
       <h1>Languages</h1>
       <div className="admin-panel">
         <p>
-          RSL Zone currently supports the languages below. Article content for each language lives in the
+          SPL Zone currently supports the languages below. Article content for each language lives in the
           <code> article_translations</code> table; UI labels (navigation, buttons, etc.) live in
           <code> src/i18n/locales/</code>.
         </p>

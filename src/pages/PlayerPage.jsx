@@ -6,10 +6,12 @@ import { getPlayerBySlug, getPlayerArticles } from '../services/content';
 import ArticleCard from '../components/ArticleCard';
 import { LoadingState, EmptyState, ErrorState } from '../components/States';
 import { applySeo } from '../utils/seo';
+import { useBrandName } from '../contexts/SiteSettingsContext';
 
 export default function PlayerPage() {
   const { slug } = useParams();
   const { language, t } = useLanguage();
+  const brandName = useBrandName();
   const langPath = useLangPath();
   const [player, setPlayer] = useState(null);
   const [articles, setArticles] = useState([]);
@@ -32,10 +34,10 @@ export default function PlayerPage() {
   useEffect(() => {
     if (!player) return;
     applySeo({
-      title: `${language === 'ar' ? player.name_ar : player.name_en} — RSL Zone`,
+      title: `${language === 'ar' ? player.name_ar : player.name_en} — ${brandName}`,
       description: (language === 'ar' ? player.bio_ar : player.bio_en) || undefined,
     });
-  }, [player, language]);
+  }, [player, language, brandName]);
 
   if (error) return <div className="container section"><ErrorState message={error} /></div>;
   if (!player) return <div className="container section"><LoadingState rows={3} /></div>;

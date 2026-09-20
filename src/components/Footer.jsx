@@ -1,9 +1,13 @@
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useLangPath } from '../hooks/useLangPath';
+import { useSiteSettings, useBrandName } from '../contexts/SiteSettingsContext';
 
 export default function Footer() {
   const { t } = useLanguage();
+  const { settings } = useSiteSettings();
+  const brandName = useBrandName();
+  const social = settings?.social_links || {};
   const langPath = useLangPath();
   const year = new Date().getFullYear();
 
@@ -11,8 +15,14 @@ export default function Footer() {
     <footer className="site-footer">
       <div className="container site-footer__grid">
         <div>
-          <div className="site-footer__brand">{t('brand.name')}</div>
+          <div className="site-footer__brand">{brandName}</div>
           <p className="site-footer__disclaimer">{t('footer.aboutText')}</p>
+          {(social.x || social.facebook) && (
+            <p className="site-footer__social">
+              {social.x && <a href={social.x} target="_blank" rel="noopener noreferrer">X</a>}
+              {social.facebook && <a href={social.facebook} target="_blank" rel="noopener noreferrer">Facebook</a>}
+            </p>
+          )}
         </div>
         <nav className="site-footer__nav" aria-label="Footer">
           <Link to={langPath('news')}>{t('nav.news')}</Link>
@@ -24,7 +34,7 @@ export default function Footer() {
       </div>
       <div className="container site-footer__bottom">
         <span>{t('footer.disclaimer')}</span>
-        <span>© {year} {t('brand.name')}. {t('footer.rights')}</span>
+        <span>© {year} {brandName}. {t('footer.rights')}</span>
       </div>
     </footer>
   );

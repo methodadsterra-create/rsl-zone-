@@ -1,6 +1,6 @@
 export default {
   brand: {
-    name: 'RSL Zone',
+    name: 'SPL Zone',
     tagline: 'Independent Saudi Pro League coverage',
   },
   nav: {
@@ -54,7 +54,7 @@ export default {
   footer: {
     about: 'About',
     aboutText:
-      'RSL Zone is an independent fan-media publication covering the Saudi Pro League. It is not affiliated with, endorsed by, or an official channel of the Saudi Pro League.',
+      'SPL Zone is an independent fan-media publication covering the Saudi Pro League. It is not affiliated with, endorsed by, or an official channel of the Saudi Pro League.',
     disclaimer: 'Independent coverage, not an official Saudi Pro League publication.',
     rights: 'All rights reserved.',
   },

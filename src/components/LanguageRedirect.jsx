@@ -1,27 +1,28 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { DEFAULT_LANGUAGE, AUTO_DETECT_BROWSER_LANGUAGE, LANGUAGE_STORAGE_KEY, detectBrowserLanguage, isSupportedLanguage } from '../i18n/config';
+import { useSiteSettings } from '../contexts/SiteSettingsContext';
 
-// Resolves the entry language with this priority, per spec:
-//   1. Existing manual language preference (localStorage)
+// Resolves the entry language with this priority:
+//   1. The visitor's own choice (language switcher, saved in localStorage)
 //   2. Browser/device language, only if AUTO_DETECT_BROWSER_LANGUAGE is on
-//   3. DEFAULT_LANGUAGE (Arabic)
-// Renders at "/" and also catches any unprefixed path (e.g. someone linking
-// to "/clubs/al-nassr" without a language segment) by preserving the rest
+//   3. The default language set in Admin -> Settings (Arabic if none)
+// Also catches unprefixed paths (e.g. "/clubs/al-nassr") and keeps the rest
 // of the path after redirecting.
 export default function LanguageRedirect() {
   const location = useLocation();
+  const { settings, ready } = useSiteSettings();
 
   const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
   let target = isSupportedLanguage(stored) ? stored : null;
 
+  // wait (briefly) for the Settings row so its default language can apply
+  if (!target && !ready) return null;
+
   if (!target) {
-    target = (AUTO_DETECT_BROWSER_LANGUAGE && detectBrowserLanguage()) || DEFAULT_LANGUAGE;
-    // We do NOT persist auto-detected language as a "manual" choice — only
-    // an explicit switcher click writes to localStorage (see
-    // LanguageContext.setLanguage). This keeps detection re-evaluating
-    // browser language on future visits until the user makes a real choice.
+    const fromSettings = isSupportedLanguage(settings?.default_language) ? settings.default_language : null;
+    target = (AUTO_DETECT_BROWSER_LANGUAGE && detectBrowserLanguage()) || fromSettings || DEFAULT_LANGUAGE;
   }
 
   const rest = location.pathname === '/' ? '' : location.pathname;
-  return <Navigate to={`/${target}${rest}${location.search}`} replace />;
+  return <Navigate to={`/${target}${rest}${location.search}${location.hash}`} replace />;
 }
