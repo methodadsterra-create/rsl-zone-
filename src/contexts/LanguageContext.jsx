@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   SUPPORTED_LANGUAGES,
@@ -59,6 +59,13 @@ export function LanguageProvider({ children }) {
     },
     [language, navigate]
   );
+
+  // keep <html lang/dir> in step with the language in the URL (also after
+  // coming back from the always-English admin)
+  useEffect(() => {
+    document.documentElement.setAttribute('lang', language);
+    document.documentElement.setAttribute('dir', meta.dir);
+  }, [language, meta.dir]);
 
   const value = useMemo(
     () => ({

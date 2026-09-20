@@ -18,9 +18,13 @@
 
           var storedLang = localStorage.getItem('rslzone_lang');
           var supported = ['en', 'ar'];
-          // Arabic is the site's default language; only an explicit choice
-          // made with the language switcher overrides it.
-          var lang = supported.indexOf(storedLang) !== -1 ? storedLang : 'ar';
+          // Admin panel: always English. Public site: the language in the URL,
+          // else the visitor's saved choice, else Arabic (the default).
+          var path = location.pathname;
+          var fromUrl = path.split('/')[1];
+          var lang = path.indexOf('/admin') === 0 ? 'en'
+            : supported.indexOf(fromUrl) !== -1 ? fromUrl
+            : supported.indexOf(storedLang) !== -1 ? storedLang : 'ar';
           document.documentElement.setAttribute('lang', lang);
           document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
         } catch (e) {

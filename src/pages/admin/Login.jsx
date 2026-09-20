@@ -1,9 +1,15 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function AdminLogin() {
   const { user, signIn, loading } = useAuth();
+
+  // the admin panel is always English and left-to-right
+  useEffect(() => {
+    document.documentElement.setAttribute('lang', 'en');
+    document.documentElement.setAttribute('dir', 'ltr');
+  }, []);
   const navigate = useNavigate();
   const location = useLocation();
   const [email, setEmail] = useState('');

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useSiteSettings } from '../contexts/SiteSettingsContext';
@@ -20,6 +20,12 @@ const NAV = [
 export default function AdminLayout() {
   const { profile, signOut } = useAuth();
   const { settings } = useSiteSettings();
+
+  // the admin panel is always English and left-to-right
+  useEffect(() => {
+    document.documentElement.setAttribute('lang', 'en');
+    document.documentElement.setAttribute('dir', 'ltr');
+  }, []);
   const navigate = useNavigate();
   const [navOpen, setNavOpen] = useState(false);
 
