@@ -8,6 +8,7 @@ export default function AdminMedia() {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
   const fileRef = useRef(null);
 
   async function load() {
@@ -44,6 +45,26 @@ export default function AdminMedia() {
     }
   }
 
+  async function copyLink(url) {
+    setError('');
+    try {
+      await navigator.clipboard.writeText(url);
+      setNotice('Link copied.');
+    } catch {
+      window.prompt('Copy this link:', url);
+    }
+  }
+
+  // Sets the site logo / favicon straight from a Media image (no copy-paste).
+  async function useAs(field, url, label) {
+    setError('');
+    setNotice('');
+    const { data, error: err } = await supabase.from('site_settings').update({ [field]: url }).eq('id', true).select();
+    if (err) setError(err.message);
+    else if (!data || data.length === 0) setError('Nothing was saved. Only users with the admin role can change settings.');
+    else setNotice(`${label} updated. Reload the public site to see it.`);
+  }
+
   async function updateCaption(id, field, value) {
     await supabase.from('media').update({ [field]: value }).eq('id', id);
   }
@@ -65,6 +86,7 @@ export default function AdminMedia() {
         </label>
       </div>
       {error && <p role="alert" style={{ color: 'var(--color-live)' }}>{error}</p>}
+      {notice && <p role="status" style={{ color: 'var(--color-primary)' }}>{notice}</p>}
 
       {loading ? <p>Loading…</p> : items.length === 0 ? (
         <p>No media uploaded yet.</p>
@@ -81,7 +103,16 @@ export default function AdminMedia() {
                 <label>Caption (AR)</label>
                 <input dir="rtl" defaultValue={item.caption_ar || ''} onBlur={(e) => updateCaption(item.id, 'caption_ar', e.target.value)} />
               </div>
-              <button className="btn btn-outline" style={{ color: 'var(--color-live)' }} onClick={() => remove(item)}>Delete</button>
+              <div className="admin-form-row">
+                <label>Link</label>
+                <input readOnly value={item.url} onFocus={(e) => e.target.select()} />
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                <button type="button" className="btn btn-outline" onClick={() => copyLink(item.url)}>Copy link</button>
+                <button type="button" className="btn btn-outline" onClick={() => useAs('logo_url', item.url, 'Site logo')}>Use as site logo</button>
+                <button type="button" className="btn btn-outline" onClick={() => useAs('favicon_url', item.url, 'Favicon')}>Use as favicon</button>
+                <button type="button" className="btn btn-outline" style={{ color: 'var(--color-live)' }} onClick={() => remove(item)}>Delete</button>
+              </div>
             </div>
           ))}
         </div>
