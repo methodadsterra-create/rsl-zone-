@@ -917,3 +917,6 @@ html[lang='ar'] .site-header__brand-name { display: none; }
 
 /* never let a wide element make the whole page scroll sideways */
 html, body { max-width: 100%; overflow-x: clip; }
+
+/* Arabic tab of the article editor: right-to-left, but the formatting buttons keep their normal order */
+.editor-lang-rtl .rt-toolbar__row { direction: ltr; }

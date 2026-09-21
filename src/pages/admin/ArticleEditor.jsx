@@ -222,6 +222,10 @@ export default function ArticleEditor() {
     if (isNew) navigate(`/admin/articles/${articleId}`, { replace: true });
   }
 
+  // Arabic fields: the input/textarea itself is right-to-left and right-aligned
+  const isAr = activeLang === 'ar';
+  const rtlProps = isAr ? { dir: 'rtl', lang: 'ar', style: { direction: 'rtl', textAlign: 'right' } } : {};
+
   async function handleDelete() {
     const name = translations.ar.title || translations.en.title || 'this article';
     if (!window.confirm(`Delete "${name}" permanently?\n\nIt will be removed from the site and this cannot be undone.`)) return;
@@ -263,13 +267,14 @@ export default function ArticleEditor() {
             <button type="button" className={activeLang === 'en' ? 'is-active' : ''} onClick={() => setActiveLang('en')}>English</button>
           </div>
 
+          <div dir={isAr ? 'rtl' : undefined} className={isAr ? 'editor-lang-rtl' : undefined}>
           <div className="admin-form-row">
             <label>Title ({activeLang})</label>
-            <input value={translations[activeLang].title} onChange={(e) => updateTranslation(activeLang, 'title', e.target.value)} />
+            <input {...rtlProps} value={translations[activeLang].title} onChange={(e) => updateTranslation(activeLang, 'title', e.target.value)} />
           </div>
           <div className="admin-form-row">
             <label>Excerpt ({activeLang})</label>
-            <textarea rows={2} value={translations[activeLang].excerpt} onChange={(e) => updateTranslation(activeLang, 'excerpt', e.target.value)} />
+            <textarea rows={2} {...rtlProps} value={translations[activeLang].excerpt} onChange={(e) => updateTranslation(activeLang, 'excerpt', e.target.value)} />
           </div>
           <div className="admin-form-row">
             <label>
@@ -287,13 +292,13 @@ export default function ArticleEditor() {
                   value={translations[activeLang].content}
                   onChange={(v) => updateTranslation(activeLang, 'content', v)}
                 />
-                <textarea ref={contentRef} rows={16} dir={activeLang === 'ar' ? 'rtl' : 'ltr'} value={translations[activeLang].content} onChange={(e) => updateTranslation(activeLang, 'content', e.target.value)} />
+                <textarea ref={contentRef} rows={16} dir="ltr" {...rtlProps} value={translations[activeLang].content} onChange={(e) => updateTranslation(activeLang, 'content', e.target.value)} />
               </>
             )}
           </div>
 
           {!translations[activeLang].title && !translations[activeLang].content && (
-            <p style={{ color: 'var(--color-ink-muted)', fontSize: '0.9rem' }}>
+            <p dir="ltr" style={{ color: 'var(--color-ink-muted)', fontSize: '0.9rem', textAlign: 'left' }}>
               You can leave this language empty. Readers in this language will see the {activeLang === 'ar' ? 'English' : 'Arabic'} version with a short notice. An empty version is never published.
             </p>
           )}
@@ -301,15 +306,16 @@ export default function ArticleEditor() {
           <h3 style={{ marginTop: 24 }}>SEO ({activeLang})</h3>
           <div className="admin-form-row">
             <label>SEO title</label>
-            <input value={translations[activeLang].seo_title} onChange={(e) => updateTranslation(activeLang, 'seo_title', e.target.value)} />
+            <input {...rtlProps} value={translations[activeLang].seo_title} onChange={(e) => updateTranslation(activeLang, 'seo_title', e.target.value)} />
           </div>
           <div className="admin-form-row">
             <label>SEO description</label>
-            <textarea rows={2} value={translations[activeLang].seo_description} onChange={(e) => updateTranslation(activeLang, 'seo_description', e.target.value)} />
+            <textarea rows={2} {...rtlProps} value={translations[activeLang].seo_description} onChange={(e) => updateTranslation(activeLang, 'seo_description', e.target.value)} />
           </div>
           <div className="admin-form-row">
             <label>Canonical URL</label>
-            <input value={translations[activeLang].canonical_url} onChange={(e) => updateTranslation(activeLang, 'canonical_url', e.target.value)} />
+            <input dir="ltr" style={{ direction: 'ltr', textAlign: 'left' }} value={translations[activeLang].canonical_url} onChange={(e) => updateTranslation(activeLang, 'canonical_url', e.target.value)} />
+          </div>
           </div>
         </div>
 
