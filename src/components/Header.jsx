@@ -54,17 +54,19 @@ export default function Header() {
             🔍
           </Link>
           <LanguageSwitcher />
-          <ThemeToggle />
-          <button
-            type="button"
-            className="site-header__burger"
-            aria-expanded={menuOpen}
-            aria-controls="mobile-nav"
-            aria-label="Menu"
-            onClick={() => setMenuOpen((v) => !v)}
-          >
-            <span /><span /><span />
-          </button>
+          <div className="site-header__actions">
+            <ThemeToggle />
+            <button
+              type="button"
+              className="site-header__burger"
+              aria-expanded={menuOpen}
+              aria-controls="mobile-nav"
+              aria-label="Menu"
+              onClick={() => setMenuOpen((v) => !v)}
+            >
+              <span /><span /><span />
+            </button>
+          </div>
         </div>
       </div>
 
