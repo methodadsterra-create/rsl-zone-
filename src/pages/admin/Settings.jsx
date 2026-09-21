@@ -18,6 +18,7 @@ export default function AdminSettings() {
   }, []);
 
   const set = (patch) => setSettings((s) => ({ ...s, ...patch }));
+  const hasArabicName = settings && 'site_name_ar' in settings;
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -31,6 +32,7 @@ export default function AdminSettings() {
       favicon_url: settings.favicon_url || null,
       social_links: settings.social_links || {},
     };
+    if (hasArabicName) payload.site_name_ar = settings.site_name_ar || null;
 
     // .select() tells us how many rows were really changed, so a blocked
     // save can't look like a successful one.
@@ -54,9 +56,15 @@ export default function AdminSettings() {
         {error && <p role="alert" style={{ color: 'var(--color-live)' }}>{error}</p>}
 
         <div className="admin-form-row">
-          <label>Site name</label>
+          <label>Site name (English)</label>
           <input value={settings.site_name || ''} onChange={(e) => set({ site_name: e.target.value })} />
         </div>
+        {hasArabicName && (
+          <div className="admin-form-row">
+            <label>Site name (Arabic)</label>
+            <input dir="rtl" value={settings.site_name_ar || ''} onChange={(e) => set({ site_name_ar: e.target.value })} />
+          </div>
+        )}
         <div className="admin-form-row">
           <label>Site description</label>
           <textarea rows={2} value={settings.site_description || ''} onChange={(e) => set({ site_description: e.target.value })} />

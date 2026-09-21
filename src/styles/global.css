@@ -875,3 +875,13 @@ button {
 .site-header__logo { width: 40px; height: 40px; object-fit: contain; flex-shrink: 0; display: block; }
 .site-footer__social { display: flex; gap: 14px; margin: 10px 0 0; }
 .site-footer__social a { color: var(--color-primary); text-decoration: underline; font-size: 0.9rem; }
+
+/* Arabic brand name: keep letters joined and use the Arabic display font */
+html[lang='ar'] .site-header__brand-name,
+html[lang='ar'] .site-footer__brand {
+  font-family: var(--font-display-ar);
+  font-weight: 800;
+  font-size: 1.45rem;
+  letter-spacing: 0;
+  line-height: 1.25;
+}
