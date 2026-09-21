@@ -4,13 +4,12 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useLangPath } from '../hooks/useLangPath';
 import {
   getFeaturedHome, getByPlacement, getBreakingNews, getUpcomingMatches,
-  getRecentResults, getLeagueTable, getClubs, getAllPublishedArticles,
+  getRecentResults, getClubs, getAllPublishedArticles,
 } from '../services/content';
 import ArticleCard from '../components/ArticleCard';
 import BreakingNewsBanner from '../components/BreakingNewsBanner';
 import MatchCard from '../components/MatchCard';
 import { TeamCard } from '../components/TeamPlayerCards';
-import LeagueTable from '../components/LeagueTable';
 import { LoadingState, EmptyState, ErrorState } from '../components/States';
 
 export default function Home() {
@@ -23,18 +22,17 @@ export default function Home() {
     let cancelled = false;
     async function load() {
       try {
-        const [featured, latest, transfers, breaking, upcoming, results, table, clubs, allArticles] = await Promise.all([
+        const [featured, latest, transfers, breaking, upcoming, results, clubs, allArticles] = await Promise.all([
           getFeaturedHome(5),
           getByPlacement('show_in_latest_news', 6),
           getByPlacement('show_in_transfers', 4),
           getBreakingNews(5),
           getUpcomingMatches(4),
           getRecentResults(4),
-          getLeagueTable(),
           getClubs(),
           getAllPublishedArticles({ limit: 8 }),
         ]);
-        if (!cancelled) setData({ featured, latest, transfers, breaking, upcoming, results, table, clubs, allArticles });
+        if (!cancelled) setData({ featured, latest, transfers, breaking, upcoming, results, clubs, allArticles });
       } catch (err) {
         if (!cancelled) setError(err.message || 'Failed to load homepage content.');
       }
@@ -112,14 +110,6 @@ export default function Home() {
               {data.results.map((m) => <MatchCard key={m.id} match={m} />)}
             </div>
           )}
-        </section>
-
-        <section className="section">
-          <div className="section-head">
-            <h2>{t('home.leagueTable')}</h2>
-            <Link to={langPath('table')} className="view-all">{t('common.viewAll')}</Link>
-          </div>
-          {data.table.length === 0 ? <EmptyState /> : <LeagueTable rows={data.table.slice(0, 8)} />}
         </section>
 
         <section className="section">

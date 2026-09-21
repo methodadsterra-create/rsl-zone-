@@ -146,12 +146,6 @@ export async function getMatchesForTeam(teamId) {
   return data || [];
 }
 
-export async function getLeagueTable() {
-  const { data, error } = await supabase.from('league_table').select('*');
-  if (error) throw error;
-  return data || [];
-}
-
 export async function getTransfers(limit = 20) {
   const { data, error } = await supabase
     .from('transfers')

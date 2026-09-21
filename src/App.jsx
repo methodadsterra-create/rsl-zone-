@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { AuthProvider } from './contexts/AuthContext';
@@ -12,7 +12,6 @@ import News from './pages/News';
 import NewsArticle from './pages/NewsArticle';
 import Transfers from './pages/Transfers';
 import Matches from './pages/Matches';
-import Table from './pages/Table';
 import Clubs from './pages/Clubs';
 import ClubPage from './pages/ClubPage';
 import Players from './pages/Players';
@@ -63,7 +62,7 @@ export default function App() {
             <Route path="matches" element={<Matches />} />
             <Route path="matches/upcoming" element={<Matches />} />
             <Route path="matches/results" element={<Matches />} />
-            <Route path="table" element={<Table />} />
+            <Route path="table" element={<Navigate to="/" replace />} />
             <Route path="clubs" element={<Clubs />} />
             <Route path="clubs/:slug" element={<ClubPage />} />
             <Route path="players" element={<Players />} />

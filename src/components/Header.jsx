@@ -19,7 +19,6 @@ export default function Header() {
     { key: 'news', to: langPath('news') },
     { key: 'transfers', to: langPath('transfers') },
     { key: 'matches', to: langPath('matches') },
-    { key: 'table', to: langPath('table') },
     { key: 'clubs', to: langPath('clubs') },
     { key: 'players', to: langPath('players') },
   ];
