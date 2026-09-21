@@ -43,11 +43,11 @@ export function useSiteSettings() {
   return useContext(SiteSettingsContext);
 }
 
-// The site name for the visitor's language: the Arabic name in Arabic, the
-// English name otherwise, falling back to the built-in translation.
+// The site name (the same "SPL Zone" in every language), from Settings,
+// falling back to the built-in translation.
 export function useBrandName() {
   const { settings } = useSiteSettings();
-  const { language, t } = useLanguage();
-  const custom = language === 'ar' ? settings?.site_name_ar : settings?.site_name;
+  const { t } = useLanguage();
+  const custom = settings?.site_name;
   return (custom && custom.trim()) || t('brand.name');
 }

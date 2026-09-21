@@ -18,7 +18,6 @@ export default function AdminSettings() {
   }, []);
 
   const set = (patch) => setSettings((s) => ({ ...s, ...patch }));
-  const hasArabicName = settings && 'site_name_ar' in settings;
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -30,10 +29,8 @@ export default function AdminSettings() {
       site_description: settings.site_description,
       logo_url: settings.logo_url || null,
       favicon_url: settings.favicon_url || null,
-      default_language: settings.default_language,
       social_links: settings.social_links || {},
     };
-    if (hasArabicName) payload.site_name_ar = settings.site_name_ar || null;
 
     // .select() tells us how many rows were really changed, so a blocked
     // save can't look like a successful one.
@@ -57,15 +54,9 @@ export default function AdminSettings() {
         {error && <p role="alert" style={{ color: 'var(--color-live)' }}>{error}</p>}
 
         <div className="admin-form-row">
-          <label>Site name (English)</label>
+          <label>Site name</label>
           <input value={settings.site_name || ''} onChange={(e) => set({ site_name: e.target.value })} />
         </div>
-        {hasArabicName && (
-          <div className="admin-form-row">
-            <label>Site name (Arabic)</label>
-            <input dir="rtl" value={settings.site_name_ar || ''} onChange={(e) => set({ site_name_ar: e.target.value })} />
-          </div>
-        )}
         <div className="admin-form-row">
           <label>Site description</label>
           <textarea rows={2} value={settings.site_description || ''} onChange={(e) => set({ site_description: e.target.value })} />
@@ -79,14 +70,6 @@ export default function AdminSettings() {
         <div className="admin-form-row">
           <label>Favicon URL</label>
           <input value={settings.favicon_url || ''} onChange={(e) => set({ favicon_url: e.target.value })} placeholder="Leave empty to use the built-in icon" />
-        </div>
-
-        <div className="admin-form-row">
-          <label>Default language (for visitors who haven't chosen one)</label>
-          <select value={settings.default_language} onChange={(e) => set({ default_language: e.target.value })}>
-            <option value="ar">Arabic</option>
-            <option value="en">English</option>
-          </select>
         </div>
 
         <div className="admin-form-row">
